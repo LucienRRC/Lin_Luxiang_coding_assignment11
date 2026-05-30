@@ -1,70 +1,125 @@
-# Getting Started with Create React App
+# Assignment 11 – React Application Containerization with Docker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+## Step 1: Create the React Project
 
-In the project directory, you can run:
+Create a new React application using Create React App.
 
-### `npm start`
+```bash
+npx create-react-app my-app
+cd my-app
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Step 2: Ignore Heavy Dependencies
 
-### `npm test`
+Create a `.dockerignore` file in the project root directory.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```text
+node_modules
+npm-debug.log
+build
+.git
+.gitignore
+```
 
-### `npm run build`
+The `.dockerignore` file prevents unnecessary files and folders from being copied into the Docker image. This reduces image size and improves build performance.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Step 3: Set Up the Dockerfile
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Create a file named `Dockerfile` in the project root directory.
 
-### `npm run eject`
+```dockerfile
+FROM node:18-alpine
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+WORKDIR /app
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+COPY package*.json ./
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+RUN npm install
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+COPY . .
 
-## Learn More
+EXPOSE 3000
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+CMD ["npm", "start"]
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Dockerfile Explanation
 
-### Code Splitting
+* `FROM node:18-alpine`
+  Uses the lightweight Node.js 18 Alpine Linux image.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+* `WORKDIR /app`
+  Sets the working directory inside the container.
 
-### Analyzing the Bundle Size
+* `COPY package*.json ./`
+  Copies dependency configuration files.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+* `RUN npm install`
+  Installs all project dependencies.
 
-### Making a Progressive Web App
+* `COPY . .`
+  Copies the application source code into the container.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* `EXPOSE 3000`
+  Exposes port 3000 used by the React application.
 
-### Advanced Configuration
+* `CMD ["npm", "start"]`
+  Starts the React development server when the container runs.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## Step 4: Docker Environment Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Ensure Docker Desktop is installed and running.
 
-### `npm run build` fails to minify
+Verify Docker installation:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+docker --version
+```
+
+Verify Docker service is running:
+
+```bash
+docker ps
+```
+
+Expected output should display Docker version information and an empty or populated container list.
+
+---
+
+## Step 5: Build the Docker Image
+
+Build the Docker image using the following command:
+
+```bash
+docker build -t assignment11-image .
+```
+
+---
+
+## Step 6: Run the Docker Container
+
+Run the container using:
+
+```bash
+docker run -it -d -p 7775:3000 --name Lin_Luxiang_coding_assignment11 assignment11-image
+```
+
+---
+
+## Step 7: Test the Application
+
+Open a web browser and navigate to:
+
+```
+http://localhost:7775
+```
+
+---
