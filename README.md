@@ -1,4 +1,4 @@
-# Assignment 11 – React Application Containerization with Docker
+# Assignment 11 – React Application with Docker
 
 ---
 
